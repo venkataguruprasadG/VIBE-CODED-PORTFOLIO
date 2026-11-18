@@ -139,32 +139,3 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
 }
-
-/* Classic CV Print Stylesheet */
-@media print {
-  @page {
-    size: A4;
-    margin: 14mm 16mm;
-  }
-
-  html, body {
-    background: #FFFFFF !important;
-    color: #111111 !important;
-    font-size: 10.5pt !important;
-  }
-
-  .no-print {
-    display: none !important;
-  }
-
-  .print-only {
-    display: block !important;
-  }
-
-  .print-reset {
-    background: transparent !important;
-    border-color: #D4CFC7 !important;
-    box-shadow: none !important;
-    color: #111111 !important;
-  }
-}

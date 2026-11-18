@@ -33,7 +33,7 @@ export function ArchitectureDrawer({ project, onClose }: ArchitectureDrawerProps
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end bg-[#091933]/50 dark:bg-black/70 backdrop-blur-xs no-print"
+      className="fixed inset-0 z-50 flex justify-end bg-[#091933]/50 dark:bg-black/70 backdrop-blur-xs"
       role="dialog"
       aria-modal="true"
       aria-label={`${project.title} System Architecture`}

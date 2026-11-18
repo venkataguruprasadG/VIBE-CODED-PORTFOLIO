@@ -67,7 +67,7 @@ export function Navbar({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#C3DCEF] dark:border-[#1E375C] bg-[#EAF4FB]/85 dark:bg-[#081426]/85 backdrop-blur-md transition-colors duration-200 no-print">
+    <header className="sticky top-0 z-40 w-full border-b border-[#C3DCEF] dark:border-[#1E375C] bg-[#EAF4FB]/85 dark:bg-[#081426]/85 backdrop-blur-md transition-colors duration-200">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         {/* Brand Identity + Live IST Clock */}
         <div className="flex items-center gap-3 min-w-0">

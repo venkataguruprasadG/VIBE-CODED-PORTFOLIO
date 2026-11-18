@@ -33,7 +33,7 @@ export function NoteReaderModal({ note, onClose }: NoteReaderModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#091933]/50 dark:bg-black/70 backdrop-blur-xs p-4 sm:p-6 no-print"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#091933]/50 dark:bg-black/70 backdrop-blur-xs p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={note.title}

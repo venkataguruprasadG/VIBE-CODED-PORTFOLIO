@@ -187,7 +187,7 @@ export function BackgroundCanvas({ isDark }: BackgroundCanvasProps) {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none no-print" aria-hidden="true">
+    <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {/* Soft slow-drifting Glacier Blue & Lemon ambient radial glows */}
       <div
         className="animate-ambient-one absolute -top-[18%] -left-[12%] h-[58vw] w-[58vw] max-h-[760px] max-w-[760px] rounded-full opacity-55 dark:opacity-30 blur-3xl"

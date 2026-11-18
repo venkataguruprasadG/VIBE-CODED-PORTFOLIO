@@ -1,4 +1,4 @@
-import { Award, GraduationCap, Printer } from 'lucide-react';
+import { Award, GraduationCap } from 'lucide-react';
 import { motion } from 'motion/react';
 import {
   CERTIFICATIONS,
@@ -8,14 +8,9 @@ import {
   TOOLKIT_GROUPS,
 } from '../data';
 import { fadeUpItem, staggerContainer, staggerFastContainer } from '../lib/animations';
-import { Magnetic } from './Magnetic';
 import { SpotlightCard } from './SpotlightCard';
 
-interface ExperienceViewProps {
-  onPrintCV: () => void;
-}
-
-export function ExperienceView({ onPrintCV }: ExperienceViewProps) {
+export function ExperienceView() {
   return (
     <motion.div
       variants={staggerContainer}
@@ -23,49 +18,21 @@ export function ExperienceView({ onPrintCV }: ExperienceViewProps) {
       animate="visible"
       className="space-y-14"
     >
-      {/* Print-Only Classic CV Letterhead */}
-      <div className="hidden print-only border-b border-[#D4CFC7] pb-4 mb-6">
-        <div className="flex items-baseline justify-between gap-4">
-          <h1 className="font-serif text-3xl font-semibold text-[#111111]">
-            {ENGINEER_PROFILE.name}
-          </h1>
-          <span className="font-mono text-xs text-[#444444]">
-            {ENGINEER_PROFILE.phone} · {ENGINEER_PROFILE.email} · {ENGINEER_PROFILE.location}
-          </span>
-        </div>
-        <p className="mt-1.5 text-sm text-[#333333]">{ENGINEER_PROFILE.bio}</p>
-      </div>
-
-      {/* Screen Header + Print / Download CV Actions */}
+      {/* Screen Header */}
       <motion.div
         variants={fadeUpItem}
-        className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#C3DCEF] dark:border-[#1E375C] pb-7 no-print"
+        className="border-b border-[#C3DCEF] dark:border-[#1E375C] pb-7"
       >
-        <div>
-          <p className="font-mono text-xs text-[#3B8EE0] dark:text-[#66B3F5]">
-            Background &amp; Credentials
-          </p>
-          <h1 className="mt-1.5 font-serif text-4xl sm:text-5xl font-semibold tracking-tight text-[#091933] dark:text-[#EDF6FC]">
-            Experience, Education &amp; Skills
-          </h1>
-          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-[#3A5173] dark:text-[#9BB8D9]">
-            Virtual AI/ML internships, academic progression in Computer Science &amp; IoT, verified
-            industry certifications, and technical toolkit.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto shrink-0">
-          <Magnetic strength={0.22} maxOffset={6}>
-            <button
-              type="button"
-              onClick={onPrintCV}
-              className="inline-flex items-center gap-2 rounded-md border border-[#091933] dark:border-[#F2EC38] bg-[#EFEA2B] dark:bg-[#F2EC38] px-4 py-2.5 text-xs font-semibold text-[#091933] hover:bg-[#091933] hover:text-[#EFEA2B] dark:hover:bg-[#66B3F5] dark:hover:border-[#66B3F5] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B8EE0]"
-            >
-              <Printer className="h-3.5 w-3.5" aria-hidden="true" />
-              <span>Print / Save Classic CV</span>
-            </button>
-          </Magnetic>
-        </div>
+        <p className="font-mono text-xs text-[#3B8EE0] dark:text-[#66B3F5]">
+          Background &amp; Credentials
+        </p>
+        <h1 className="mt-1.5 font-serif text-4xl sm:text-5xl font-semibold tracking-tight text-[#091933] dark:text-[#EDF6FC]">
+          Experience, Education &amp; Skills
+        </h1>
+        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-[#3A5173] dark:text-[#9BB8D9]">
+          Virtual AI/ML internships, academic progression in Computer Science &amp; IoT, verified
+          industry certifications, and technical toolkit.
+        </p>
       </motion.div>
 
       {/* Internships Timeline */}
@@ -89,7 +56,7 @@ export function ExperienceView({ onPrintCV }: ExperienceViewProps) {
                 }`}
               />
 
-              <SpotlightCard className="p-6 sm:p-7 print-reset">
+              <SpotlightCard className="p-6 sm:p-7">
                 <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
                   <div>
                     <h3 className="font-serif text-2xl font-semibold tracking-tight text-[#091933] dark:text-[#EDF6FC]">
@@ -153,7 +120,7 @@ export function ExperienceView({ onPrintCV }: ExperienceViewProps) {
           <motion.div variants={staggerFastContainer} className="space-y-4">
             {EDUCATION.map((edu) => (
               <motion.div key={edu.id} variants={fadeUpItem}>
-                <SpotlightCard className="p-5 print-reset">
+                <SpotlightCard className="p-5">
                   <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1.5">
                     <h3 className="font-serif text-xl font-semibold text-[#091933] dark:text-[#EDF6FC]">
                       {edu.institution}
@@ -181,7 +148,7 @@ export function ExperienceView({ onPrintCV }: ExperienceViewProps) {
             </h2>
           </div>
 
-          <SpotlightCard className="p-5 print-reset divide-y divide-[#C3DCEF] dark:divide-[#1E375C]">
+          <SpotlightCard className="p-5 divide-y divide-[#C3DCEF] dark:divide-[#1E375C]">
             {CERTIFICATIONS.map((cert) => (
               <div key={cert.id} className="py-3 first:pt-0 last:pb-0">
                 <div className="text-sm font-medium text-[#091933] dark:text-[#EDF6FC]">
@@ -194,7 +161,7 @@ export function ExperienceView({ onPrintCV }: ExperienceViewProps) {
             ))}
           </SpotlightCard>
 
-          <SpotlightCard className="p-5 print-reset">
+          <SpotlightCard className="p-5">
             <h3 className="font-serif text-lg font-semibold text-[#091933] dark:text-[#EDF6FC]">
               Languages &amp; Core Strengths
             </h3>
@@ -231,7 +198,7 @@ export function ExperienceView({ onPrintCV }: ExperienceViewProps) {
         >
           {TOOLKIT_GROUPS.map((group) => (
             <motion.div key={group.category} variants={fadeUpItem} className="flex">
-              <SpotlightCard className="w-full p-5 print-reset flex flex-col justify-between">
+              <SpotlightCard className="w-full p-5 flex flex-col justify-between">
                 <div>
                   <h3 className="font-serif text-xl font-semibold text-[#091933] dark:text-[#EDF6FC]">
                     {group.category}

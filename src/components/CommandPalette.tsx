@@ -6,7 +6,6 @@ import {
   Layers,
   Mail,
   Moon,
-  Printer,
   Search,
   Sun,
   Terminal,
@@ -27,7 +26,7 @@ interface CommandItem {
   label: string;
   hint: string;
   keywords: string;
-  icon: 'nav' | 'project' | 'note' | 'theme' | 'copy' | 'print';
+  icon: 'nav' | 'project' | 'note' | 'theme' | 'copy';
   run: () => void;
 }
 
@@ -40,7 +39,6 @@ interface CommandPaletteProps {
   isDark: boolean;
   onToggleTheme: () => void;
   onCopyEmail: () => void;
-  onPrintCV: () => void;
 }
 
 export function CommandPalette({
@@ -52,7 +50,6 @@ export function CommandPalette({
   isDark,
   onToggleTheme,
   onCopyEmail,
-  onPrintCV,
 }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -146,19 +143,10 @@ export function CommandPalette({
         icon: 'copy',
         run: onCopyEmail,
       },
-      {
-        id: 'act-print-cv',
-        group: 'Actions',
-        label: 'Print / Save Classic CV',
-        hint: 'Opens Print Dialog',
-        keywords: 'print pdf save cv resume',
-        icon: 'print',
-        run: onPrintCV,
-      },
     ];
 
     return [...navItems, ...projectItems, ...noteItems, ...actionItems];
-  }, [isDark, onCopyEmail, onNavigate, onOpenNote, onOpenProject, onPrintCV, onToggleTheme]);
+  }, [isDark, onCopyEmail, onNavigate, onOpenNote, onOpenProject, onToggleTheme]);
 
   const filteredItems = useMemo(() => {
     const trimmed = query.trim().toLowerCase();
@@ -233,8 +221,6 @@ export function CommandPalette({
         );
       case 'copy':
         return <Copy className="h-4 w-4 shrink-0" aria-hidden="true" />;
-      case 'print':
-        return <Printer className="h-4 w-4 shrink-0" aria-hidden="true" />;
       default:
         return <Terminal className="h-4 w-4 shrink-0" aria-hidden="true" />;
     }
@@ -242,7 +228,7 @@ export function CommandPalette({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-[#091933]/50 dark:bg-black/70 backdrop-blur-xs pt-[12vh] px-4 no-print"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-[#091933]/50 dark:bg-black/70 backdrop-blur-xs pt-[12vh] px-4"
       role="dialog"
       aria-modal="true"
       aria-label="Global Command Palette"

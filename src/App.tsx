@@ -78,15 +78,6 @@ export default function App() {
     }
   }, [showToast]);
 
-  const handlePrintCV = useCallback(() => {
-    if (activeView !== 'experience') {
-      setActiveView('experience');
-      window.setTimeout(() => window.print(), 220);
-    } else {
-      window.print();
-    }
-  }, [activeView]);
-
   const handleOpenProject = useCallback((project: Project) => {
     setSelectedProject(project);
   }, []);
@@ -127,7 +118,7 @@ export default function App() {
               />
             )}
             {activeView === 'work' && <WorkView onOpenProject={handleOpenProject} />}
-            {activeView === 'experience' && <ExperienceView onPrintCV={handlePrintCV} />}
+            {activeView === 'experience' && <ExperienceView />}
             {activeView === 'notes' && <NotesView onOpenNote={handleOpenNote} />}
             {activeView === 'contact' && (
               <ContactView onCopyEmail={handleCopyEmail} onNotify={showToast} />
@@ -137,7 +128,7 @@ export default function App() {
       </main>
 
       {/* Quiet Editorial Footer */}
-      <footer className="relative z-10 border-t border-[#C3DCEF] dark:border-[#1E375C] bg-[#EAF4FB]/75 dark:bg-[#081426]/75 backdrop-blur-xs no-print">
+      <footer className="relative z-10 border-t border-[#C3DCEF] dark:border-[#1E375C] bg-[#EAF4FB]/75 dark:bg-[#081426]/75 backdrop-blur-xs">
         <div className="mx-auto flex max-w-6xl flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-6 text-xs text-[#3A5173] dark:text-[#9BB8D9]">
           <div className="font-mono">
             © {new Date().getFullYear()} {ENGINEER_PROFILE.name} · {ENGINEER_PROFILE.location}
@@ -166,7 +157,6 @@ export default function App() {
         isDark={isDark}
         onToggleTheme={() => setIsDark((prev) => !prev)}
         onCopyEmail={handleCopyEmail}
-        onPrintCV={handlePrintCV}
       />
 
       <ArchitectureDrawer
@@ -189,7 +179,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.18 }}
-            className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-lg border border-[#1E375C] bg-[#091933] dark:bg-[#F2EC38] px-4 py-2.5 text-xs font-medium text-[#EDF6FC] dark:text-[#081426] shadow-lg no-print"
+            className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-lg border border-[#1E375C] bg-[#091933] dark:bg-[#F2EC38] px-4 py-2.5 text-xs font-medium text-[#EDF6FC] dark:text-[#081426] shadow-lg"
           >
             <Check className="h-3.5 w-3.5 text-[#EFEA2B] dark:text-[#081426]" aria-hidden="true" />
             <span>{toastMessage}</span>
