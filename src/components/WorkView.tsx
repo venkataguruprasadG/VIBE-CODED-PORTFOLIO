@@ -3,6 +3,7 @@ import { ArrowUpRight, Layers } from 'lucide-react';
 import { motion } from 'motion/react';
 import { PROJECTS, type Project, type ProjectCategory } from '../data';
 import { fadeUpItem, staggerContainer, staggerFastContainer } from '../lib/animations';
+import { GitHubActivity } from './GitHubActivity';
 import { Magnetic } from './Magnetic';
 import { ParallaxThumbnail } from './ParallaxThumbnail';
 import { SpotlightCard } from './SpotlightCard';
@@ -135,6 +136,14 @@ export function WorkView({ onOpenProject }: WorkViewProps) {
           </motion.div>
         ))}
       </motion.div>
+
+      {/* Currently Building & Live GitHub Repositories */}
+      <motion.section
+        variants={fadeUpItem}
+        className="border-t border-[#C3DCEF] dark:border-[#1E375C] pt-12"
+      >
+        <GitHubActivity variant="work" />
+      </motion.section>
     </motion.div>
   );
 }

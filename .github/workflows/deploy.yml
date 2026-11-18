@@ -32,6 +32,9 @@ jobs:
         run: npm install --legacy-peer-deps --no-audit --no-fund
 
       - name: Build static site
+        env:
+          VITE_GITHUB_USERNAME: ${{ github.repository_owner }}
+          VITE_GITHUB_REPO: ${{ github.event.repository.name }}
         run: npm run build
 
       - name: Upload Pages artifact

@@ -10,6 +10,7 @@ import {
   type ViewId,
 } from '../data';
 import { fadeUpItem, staggerContainer, staggerFastContainer } from '../lib/animations';
+import { GitHubActivity } from './GitHubActivity';
 import { Magnetic } from './Magnetic';
 import { ParallaxThumbnail } from './ParallaxThumbnail';
 import { SpotlightCard } from './SpotlightCard';
@@ -410,6 +411,14 @@ export function OverviewView({
         </motion.div>
       </motion.section>
 
+      {/* Live GitHub Contribution Chart & Currently Building */}
+      <motion.section
+        variants={fadeUpItem}
+        className="border-t border-[#C3DCEF] dark:border-[#1E375C] pt-12"
+      >
+        <GitHubActivity variant="overview" onOpenWork={() => onNavigate('work')} />
+      </motion.section>
+
       {/* Recent Engineering Note Preview */}
       <motion.section
         variants={fadeUpItem}
@@ -418,7 +427,7 @@ export function OverviewView({
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div>
             <p className="font-mono text-xs text-[#3B8EE0] dark:text-[#66B3F5]">
-              02. Field Notes
+              03. Field Notes
             </p>
             <h2 className="mt-1 font-serif text-3xl font-semibold tracking-tight text-[#091933] dark:text-[#EDF6FC]">
               Latest Engineering Note
