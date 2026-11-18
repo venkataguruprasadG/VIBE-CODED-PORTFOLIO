@@ -121,7 +121,7 @@ export async function fetchGitHubUserAndRepos(
 
   const [userRes, reposRes, rawPinned] = await Promise.all([
     fetch(`https://api.github.com/users/${cleanUser}`, { headers, signal }),
-    fetch(`https://api.github.com/users/${cleanUser}/repos?sort=pushed&per_page=50&type=owner`, {
+    fetch(`https://api.github.com/users/${cleanUser}/repos?sort=pushed&per_page=100&type=owner`, {
       headers,
       signal,
     }),
