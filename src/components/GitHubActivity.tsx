@@ -510,39 +510,55 @@ export function GitHubActivity({ variant = 'overview', onOpenWork }: GitHubActiv
             </div>
           )}
 
-          {/* 52-Week Green Contribution Grid */}
+          {/* 52-Week Green Contribution Grid (Full-Width Proportional Fit) */}
           <div className="mt-5 overflow-x-auto pb-2">
             {loading ? (
               <div className="h-32 w-full rounded-lg bg-[#D9ECF8]/60 dark:bg-[#081426]/60 animate-pulse" />
             ) : (
-              <div className="inline-block min-w-max">
-                {/* Month Labels Row */}
-                <div className="relative mb-2 ml-8 h-4 font-mono text-[10px] text-[#3A5173] dark:text-[#9BB8D9]">
-                  {matrix.monthLabels.map((m) => (
-                    <span
-                      key={`${m.label}-${m.weekIndex}`}
-                      style={{ left: `${m.weekIndex * 15}px` }}
-                      className="absolute top-0 whitespace-nowrap"
-                    >
-                      {m.label}
-                    </span>
-                  ))}
+              <div className="w-full min-w-[680px]">
+                {/* Month Labels Row aligned 1:1 with Week Columns */}
+                <div className="mb-2 flex items-center gap-2">
+                  <div className="w-7 shrink-0 pr-1" aria-hidden="true" />
+                  <div
+                    className="grid flex-1 gap-[3px] font-mono text-[10px] text-[#3A5173] dark:text-[#9BB8D9]"
+                    style={{
+                      gridTemplateColumns: `repeat(${Math.max(matrix.weeks.length, 1)}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {matrix.monthLabels.map((m) => (
+                      <span
+                        key={`${m.label}-${m.weekIndex}`}
+                        style={{ gridColumnStart: m.weekIndex + 1, gridRowStart: 1 }}
+                        className="whitespace-nowrap"
+                      >
+                        {m.label}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex items-stretch gap-2">
                   {/* Weekday Labels */}
-                  <div className="grid grid-rows-7 gap-[3px] pr-1 font-mono text-[10px] leading-[12px] text-[#3A5173] dark:text-[#9BB8D9] select-none">
-                    <span className="opacity-0">Sun</span>
-                    <span>Mon</span>
-                    <span className="opacity-0">Tue</span>
-                    <span>Wed</span>
-                    <span className="opacity-0">Thu</span>
-                    <span>Fri</span>
-                    <span className="opacity-0">Sat</span>
+                  <div className="grid w-7 shrink-0 grid-rows-7 gap-[3px] pr-1 font-mono text-[10px] leading-none text-[#3A5173] dark:text-[#9BB8D9] select-none">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d, idx) => (
+                      <span
+                        key={d}
+                        className={`flex items-center ${idx % 2 === 1 ? 'opacity-100' : 'opacity-0'}`}
+                      >
+                        {d}
+                      </span>
+                    ))}
                   </div>
 
                   {/* Week Columns */}
-                  <div className="flex gap-[3px]" role="grid" aria-label="Daily GitHub contributions">
+                  <div
+                    className="grid flex-1 gap-[3px]"
+                    style={{
+                      gridTemplateColumns: `repeat(${Math.max(matrix.weeks.length, 1)}, minmax(0, 1fr))`,
+                    }}
+                    role="grid"
+                    aria-label="Daily GitHub contributions"
+                  >
                     {matrix.weeks.map((week, wIdx) => (
                       <div key={wIdx} className="grid grid-rows-7 gap-[3px]">
                         {week.days.map((day, dIdx) =>
@@ -553,10 +569,10 @@ export function GitHubActivity({ variant = 'overview', onOpenWork }: GitHubActiv
                               onMouseEnter={() => setHoveredDay(day)}
                               onFocus={() => setHoveredDay(day)}
                               aria-label={`${day.count} contributions on ${formatShortDate(day.date)}`}
-                              className={`h-[12px] w-[12px] rounded-[2.5px] transition-transform duration-100 hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B8EE0] ${LEVEL_CLASSES[day.level]}`}
+                              className={`w-full aspect-square rounded-[2.5px] transition-transform duration-100 hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B8EE0] ${LEVEL_CLASSES[day.level]}`}
                             />
                           ) : (
-                            <span key={`empty-${wIdx}-${dIdx}`} className="h-[12px] w-[12px]" />
+                            <span key={`empty-${wIdx}-${dIdx}`} className="w-full aspect-square" />
                           )
                         )}
                       </div>
