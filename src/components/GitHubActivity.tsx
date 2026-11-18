@@ -2,27 +2,34 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
   ArrowUpRight,
+  Code2,
+  Cpu,
   Flame,
   GitBranch,
   GitFork,
   Github,
+  Layers,
   Pin,
   RefreshCw,
   Sparkles,
   Star,
+  Terminal,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import {
   buildContributionMatrix,
+  classifyGitHubRepo,
   detectDefaultGitHubContext,
   fetchGitHubContributions,
   fetchGitHubUserAndRepos,
   formatRelativeMonthYear,
   formatShortDate,
+  type ClassifiedRepoBucket,
   type GitHubContributionDay,
   type GitHubContributionsResponse,
   type GitHubRepoItem,
   type GitHubUserProfile,
+  type RepoCategoryKey,
 } from '../lib/github';
 import { fadeUpItem, staggerFastContainer } from '../lib/animations';
 import { Magnetic } from './Magnetic';
@@ -54,6 +61,52 @@ const LANGUAGE_DOT: Record<string, string> = {
   'Jupyter Notebook': '#DA5B0B',
 };
 
+const REPO_TABS: Array<{
+  key: RepoCategoryKey;
+  label: string;
+  description: string;
+}> = [
+  {
+    key: 'all',
+    label: 'All Repositories',
+    description: 'Every public repository alongside this portfolio build.',
+  },
+  {
+    key: 'projects',
+    label: 'Projects & Builds',
+    description: 'Full applications, web builds, and software engineering repositories.',
+  },
+  {
+    key: 'dsa',
+    label: 'DSA & Practice',
+    description: 'Data structures, algorithms, and daily coding problem pushes (e.g. Learn DSA).',
+  },
+  {
+    key: 'ai-iot',
+    label: 'AI, Vision & IoT',
+    description: 'Machine learning, OpenCV, TensorFlow, and Arduino/Embedded systems.',
+  },
+];
+
+const BUCKET_LABELS: Record<ClassifiedRepoBucket, string> = {
+  projects: 'Project Build',
+  dsa: 'DSA & Practice',
+  'ai-iot': 'AI & IoT',
+};
+
+function renderTabIcon(key: RepoCategoryKey) {
+  switch (key) {
+    case 'all':
+      return <Layers className="h-3.5 w-3.5" aria-hidden="true" />;
+    case 'projects':
+      return <Code2 className="h-3.5 w-3.5" aria-hidden="true" />;
+    case 'dsa':
+      return <Terminal className="h-3.5 w-3.5" aria-hidden="true" />;
+    case 'ai-iot':
+      return <Cpu className="h-3.5 w-3.5" aria-hidden="true" />;
+  }
+}
+
 export function GitHubActivity({ variant = 'overview', onOpenWork }: GitHubActivityProps) {
   const initialContext = useMemo(() => detectDefaultGitHubContext(), []);
   const username = initialContext.username;
@@ -63,6 +116,7 @@ export function GitHubActivity({ variant = 'overview', onOpenWork }: GitHubActiv
   const [recentRepos, setRecentRepos] = useState<GitHubRepoItem[]>([]);
   const [calendar, setCalendar] = useState<GitHubContributionsResponse | null>(null);
   const [selectedYear, setSelectedYear] = useState<string>('last');
+  const [activeRepoTab, setActiveRepoTab] = useState<RepoCategoryKey>('all');
   const [hoveredDay, setHoveredDay] = useState<GitHubContributionDay | null>(null);
   const [avatarFailed, setAvatarFailed] = useState(false);
 
@@ -138,30 +192,65 @@ export function GitHubActivity({ variant = 'overview', onOpenWork }: GitHubActiv
     );
   }, [initialContext.currentRepo, pinnedRepos, recentRepos]);
 
-  // Prefer pinned repositories first, then supplement with active owner repositories
-  const displayedRepos = useMemo(() => {
-    const limit = variant === 'overview' ? 3 : 6;
-    const combined: GitHubRepoItem[] = [];
+  // Deduplicated repos ordered with Pinned first, then recently pushed
+  const allCombinedRepos = useMemo(() => {
+    const combined: Array<{ repo: GitHubRepoItem; bucket: ClassifiedRepoBucket }> = [];
     const seen = new Set<string>();
 
     const pushIfNew = (repo: GitHubRepoItem) => {
-      if (currentPortfolioRepo && repo.name.toLowerCase() === currentPortfolioRepo.name.toLowerCase()) {
+      if (
+        currentPortfolioRepo &&
+        repo.name.toLowerCase() === currentPortfolioRepo.name.toLowerCase()
+      ) {
         return;
       }
       const key = repo.fullName.toLowerCase();
       if (!seen.has(key)) {
         seen.add(key);
-        combined.push(repo);
+        combined.push({ repo, bucket: classifyGitHubRepo(repo) });
       }
     };
 
     pinnedRepos.forEach(pushIfNew);
     recentRepos.forEach(pushIfNew);
 
-    return combined.slice(0, limit);
-  }, [currentPortfolioRepo, pinnedRepos, recentRepos, variant]);
+    return combined;
+  }, [currentPortfolioRepo, pinnedRepos, recentRepos]);
 
-  const hasPinnedRepos = pinnedRepos.length > 0;
+  const categoryCounts = useMemo(() => {
+    const counts: Record<RepoCategoryKey, number> = {
+      all: allCombinedRepos.length + 1, // +1 for the Vibe-Coded Active Build spotlight
+      projects: 1, // includes the Vibe-Coded Active Build spotlight
+      dsa: 0,
+      'ai-iot': 0,
+    };
+
+    for (const item of allCombinedRepos) {
+      counts[item.bucket] += 1;
+    }
+
+    return counts;
+  }, [allCombinedRepos]);
+
+  const showVibeCodedCard = activeRepoTab === 'all' || activeRepoTab === 'projects';
+
+  const displayedRepos = useMemo(() => {
+    const filtered =
+      activeRepoTab === 'all'
+        ? allCombinedRepos
+        : allCombinedRepos.filter((item) => item.bucket === activeRepoTab);
+
+    if (variant === 'work') {
+      return filtered;
+    }
+    const overviewLimit = showVibeCodedCard ? 3 : 4;
+    return filtered.slice(0, overviewLimit);
+  }, [activeRepoTab, allCombinedRepos, showVibeCodedCard, variant]);
+
+  const activeTabMeta = useMemo(
+    () => REPO_TABS.find((t) => t.key === activeRepoTab) ?? REPO_TABS[0],
+    [activeRepoTab]
+  );
 
   const currentPortfolioRepoUrl =
     currentPortfolioRepo?.htmlUrl ||
@@ -222,7 +311,7 @@ export function GitHubActivity({ variant = 'overview', onOpenWork }: GitHubActiv
           <h2 className="mt-1 font-serif text-3xl font-semibold tracking-tight text-[#091933] dark:text-[#EDF6FC]">
             {variant === 'overview'
               ? 'GitHub Activity & Pinned Repositories'
-              : 'Vibe-Coded Build & GitHub Repositories'}
+              : 'Vibe-Coded Build & Classified GitHub Repositories'}
           </h2>
         </div>
 
@@ -264,7 +353,7 @@ export function GitHubActivity({ variant = 'overview', onOpenWork }: GitHubActiv
               </div>
               <p className="mt-1.5 text-sm leading-relaxed text-[#3A5173] dark:text-[#9BB8D9]">
                 When hosted on GitHub Pages, your daily contribution heatmap, project velocity
-                metrics, and pinned repositories hydrate automatically from the GitHub API for
+                metrics, and classified repositories hydrate automatically from the GitHub API for
                 every visitor.
               </p>
             </div>
@@ -539,117 +628,185 @@ export function GitHubActivity({ variant = 'overview', onOpenWork }: GitHubActiv
         </SpotlightCard>
       )}
 
-      {/* Vibe-Coded Build Spotlight + Pinned & Active GitHub Repositories */}
-      <div>
-        {displayedRepos.length > 0 && (
-          <div className="mb-4 flex items-center justify-between gap-2 font-mono text-xs text-[#3A5173] dark:text-[#9BB8D9]">
-            <span>
-              {hasPinnedRepos ? 'Pinned & Active Repositories' : 'Recent Public Repositories'}
-            </span>
-            {userProfile && (
-              <span className="tabular-nums">{userProfile.publicRepos} public repos</span>
-            )}
+      {/* Repository Classification Sub-Navbar (Below Contribution Graph) */}
+      <div className="space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#C3DCEF] dark:border-[#1E375C] pb-4">
+          <div>
+            <div className="flex items-center gap-2 font-mono text-xs text-[#3B8EE0] dark:text-[#66B3F5]">
+              <span>Repository Classification</span>
+              {userProfile && (
+                <span className="text-[#3A5173] dark:text-[#9BB8D9] tabular-nums">
+                  · {userProfile.publicRepos} public repos
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-xs sm:text-sm text-[#3A5173] dark:text-[#9BB8D9]">
+              {activeTabMeta.description}
+            </p>
           </div>
-        )}
 
-        <motion.div
-          variants={staggerFastContainer}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          <motion.div variants={fadeUpItem}>{vibeCodedCard}</motion.div>
-
-          {displayedRepos.map((repo) => {
-            const dotColor =
-              repo.languageColor ||
-              (repo.language && LANGUAGE_DOT[repo.language]) ||
-              '#3B8EE0';
-            return (
-              <motion.div key={`${repo.fullName}-${repo.id}`} variants={fadeUpItem}>
-                <SpotlightCard className="h-full p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between gap-2 font-mono text-xs text-[#3A5173] dark:text-[#9BB8D9]">
-                      <span className="inline-flex items-center gap-1.5">
-                        {repo.isPinned ? (
-                          <Pin
-                            className="h-3.5 w-3.5 text-[#3B8EE0] dark:text-[#F2EC38]"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <GitBranch
-                            className="h-3.5 w-3.5 text-[#3B8EE0] dark:text-[#66B3F5]"
-                            aria-hidden="true"
-                          />
-                        )}
-                        <span>
-                          {repo.isPinned
-                            ? 'Pinned Repository'
-                            : repo.isFork
-                            ? 'Forked Repository'
-                            : 'GitHub Repository'}
-                        </span>
+          <nav
+            role="tablist"
+            aria-label="Classify GitHub repositories by focus area"
+            className="inline-flex flex-wrap items-center gap-1 rounded-lg border border-[#C3DCEF] dark:border-[#1E375C] bg-[#D9ECF8] dark:bg-[#0F2038] p-1 self-start lg:self-auto"
+          >
+            {REPO_TABS.map((tab) => {
+              const isSelected = activeRepoTab === tab.key;
+              const count = categoryCounts[tab.key];
+              return (
+                <Magnetic key={tab.key} strength={0.18} maxOffset={3}>
+                  <button
+                    role="tab"
+                    aria-selected={isSelected}
+                    type="button"
+                    onClick={() => setActiveRepoTab(tab.key)}
+                    className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B8EE0] ${
+                      isSelected
+                        ? 'bg-[#091933] dark:bg-[#F2EC38] text-[#EFEA2B] dark:text-[#081426] shadow-xs'
+                        : 'text-[#3A5173] dark:text-[#9BB8D9] hover:text-[#091933] dark:hover:text-[#EDF6FC]'
+                    }`}
+                  >
+                    {renderTabIcon(tab.key)}
+                    <span>{tab.label}</span>
+                    {username && (
+                      <span
+                        className={`font-mono text-[10px] tabular-nums ${
+                          isSelected
+                            ? 'text-[#EFEA2B]/90 dark:text-[#081426]/80'
+                            : 'text-[#3A5173]/80 dark:text-[#9BB8D9]/80'
+                        }`}
+                      >
+                        ({count})
                       </span>
-                      {repo.pushedAt && (
-                        <span className="tabular-nums">
-                          Updated {formatRelativeMonthYear(repo.pushedAt)}
+                    )}
+                  </button>
+                </Magnetic>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Classified Repositories Grid */}
+        {!showVibeCodedCard && displayedRepos.length === 0 ? (
+          <SpotlightCard className="p-7 text-center">
+            <p className="font-serif text-xl font-semibold text-[#091933] dark:text-[#EDF6FC]">
+              No repositories in {activeTabMeta.label} yet
+            </p>
+            <p className="mt-1.5 text-sm text-[#3A5173] dark:text-[#9BB8D9]">
+              {username
+                ? `No public repositories under @${username} currently match this category.`
+                : 'Repositories classified under this section will appear automatically once synced on GitHub Pages.'}
+            </p>
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={() => setActiveRepoTab('all')}
+                className="inline-flex items-center gap-1.5 rounded-md border border-[#091933] dark:border-[#F2EC38] bg-[#EFEA2B] dark:bg-[#F2EC38] px-3.5 py-1.5 text-xs font-semibold text-[#091933] hover:bg-[#091933] hover:text-[#EFEA2B] transition-colors"
+              >
+                <span>Show All Repositories</span>
+              </button>
+            </div>
+          </SpotlightCard>
+        ) : (
+          <motion.div
+            key={activeRepoTab}
+            variants={staggerFastContainer}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            {showVibeCodedCard && (
+              <motion.div variants={fadeUpItem}>{vibeCodedCard}</motion.div>
+            )}
+
+            {displayedRepos.map(({ repo, bucket }) => {
+              const dotColor =
+                repo.languageColor ||
+                (repo.language && LANGUAGE_DOT[repo.language]) ||
+                '#3B8EE0';
+              return (
+                <motion.div key={`${repo.fullName}-${repo.id}`} variants={fadeUpItem}>
+                  <SpotlightCard className="h-full p-6 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between gap-2 font-mono text-xs text-[#3A5173] dark:text-[#9BB8D9]">
+                        <span className="inline-flex items-center gap-1.5">
+                          {repo.isPinned ? (
+                            <Pin
+                              className="h-3.5 w-3.5 text-[#3B8EE0] dark:text-[#F2EC38]"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <GitBranch
+                              className="h-3.5 w-3.5 text-[#3B8EE0] dark:text-[#66B3F5]"
+                              aria-hidden="true"
+                            />
+                          )}
+                          <span>
+                            {BUCKET_LABELS[bucket]}
+                            {repo.isPinned ? ' · Pinned' : ''}
+                          </span>
                         </span>
-                      )}
+                        {repo.pushedAt && (
+                          <span className="tabular-nums">
+                            Updated {formatRelativeMonthYear(repo.pushedAt)}
+                          </span>
+                        )}
+                      </div>
+
+                      <h3 className="mt-2.5 font-serif text-2xl font-semibold tracking-tight text-[#091933] dark:text-[#EDF6FC]">
+                        <a
+                          href={repo.htmlUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-[#3B8EE0] dark:hover:text-[#F2EC38] transition-colors"
+                        >
+                          {repo.name}
+                        </a>
+                      </h3>
+
+                      <p className="mt-2 text-sm leading-relaxed text-[#3A5173] dark:text-[#9BB8D9]">
+                        {repo.description || 'Public software repository hosted on GitHub.'}
+                      </p>
                     </div>
 
-                    <h3 className="mt-2.5 font-serif text-2xl font-semibold tracking-tight text-[#091933] dark:text-[#EDF6FC]">
+                    <div className="mt-5 pt-4 border-t border-[#C3DCEF] dark:border-[#1E375C] flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 font-mono text-xs text-[#3A5173] dark:text-[#9BB8D9] truncate">
+                        {repo.language && (
+                          <span className="inline-flex items-center gap-1.5">
+                            <span
+                              className="h-2 w-2 rounded-full shrink-0"
+                              style={{ backgroundColor: dotColor }}
+                              aria-hidden="true"
+                            />
+                            <span>{repo.language}</span>
+                          </span>
+                        )}
+                        <span className="inline-flex items-center gap-1 tabular-nums">
+                          <Star className="h-3 w-3" aria-hidden="true" />
+                          <span>{repo.stars}</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1 tabular-nums">
+                          <GitFork className="h-3 w-3" aria-hidden="true" />
+                          <span>{repo.forks}</span>
+                        </span>
+                      </div>
+
                       <a
                         href={repo.htmlUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-[#3B8EE0] dark:hover:text-[#F2EC38] transition-colors"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#091933] dark:text-[#F2EC38] hover:text-[#3B8EE0] whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B8EE0] rounded"
                       >
-                        {repo.name}
+                        <span>Open Repo</span>
+                        <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
                       </a>
-                    </h3>
-
-                    <p className="mt-2 text-sm leading-relaxed text-[#3A5173] dark:text-[#9BB8D9]">
-                      {repo.description || 'Public software repository hosted on GitHub.'}
-                    </p>
-                  </div>
-
-                  <div className="mt-5 pt-4 border-t border-[#C3DCEF] dark:border-[#1E375C] flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 font-mono text-xs text-[#3A5173] dark:text-[#9BB8D9] truncate">
-                      {repo.language && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <span
-                            className="h-2 w-2 rounded-full shrink-0"
-                            style={{ backgroundColor: dotColor }}
-                            aria-hidden="true"
-                          />
-                          <span>{repo.language}</span>
-                        </span>
-                      )}
-                      <span className="inline-flex items-center gap-1 tabular-nums">
-                        <Star className="h-3 w-3" aria-hidden="true" />
-                        <span>{repo.stars}</span>
-                      </span>
-                      <span className="inline-flex items-center gap-1 tabular-nums">
-                        <GitFork className="h-3 w-3" aria-hidden="true" />
-                        <span>{repo.forks}</span>
-                      </span>
                     </div>
-
-                    <a
-                      href={repo.htmlUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#091933] dark:text-[#F2EC38] hover:text-[#3B8EE0] whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B8EE0] rounded"
-                    >
-                      <span>Open Repo</span>
-                      <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-                    </a>
-                  </div>
-                </SpotlightCard>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                  </SpotlightCard>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
       </div>
     </div>
   );

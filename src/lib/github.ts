@@ -121,7 +121,7 @@ export async function fetchGitHubUserAndRepos(
 
   const [userRes, reposRes, rawPinned] = await Promise.all([
     fetch(`https://api.github.com/users/${cleanUser}`, { headers, signal }),
-    fetch(`https://api.github.com/users/${cleanUser}/repos?sort=pushed&per_page=18&type=owner`, {
+    fetch(`https://api.github.com/users/${cleanUser}/repos?sort=pushed&per_page=50&type=owner`, {
       headers,
       signal,
     }),
@@ -488,6 +488,31 @@ export function buildContributionMatrix(
     longestStreak,
     weeklyAverage,
   };
+}
+
+export type RepoCategoryKey = 'all' | 'projects' | 'dsa' | 'ai-iot';
+
+export type ClassifiedRepoBucket = Exclude<RepoCategoryKey, 'all'>;
+
+const DSA_WORD_PATTERN =
+  /(^|[^a-z])dsa([^a-z]|$)|learn[-_\s]?dsa|data[-_\s]?structures?|algorithms?|leetcode|hackerrank|codechef|codeforces|geeksforgeeks|\bgfg\b|competitive[-_\s]?programming|problem[-_\s]?solving|interview[-_\s]?prep|coding[-_\s]?practice/i;
+
+const AI_IOT_PATTERN =
+  /(^|[^a-z])(ai|ml|iot)([^a-z]|$)|aiml|machine[-_\s]?learning|deep[-_\s]?learning|computer[-_\s]?vision|opencv|tensorflow|pytorch|face[-_\s]?recognition|neural|arduino|embedded|sensor|esp32|esp8266|raspberry|hardware|biometric|voting[-_\s]?machine/i;
+
+export function classifyGitHubRepo(repo: GitHubRepoItem): ClassifiedRepoBucket {
+  const haystack = `${repo.name} ${repo.description ?? ''} ${repo.topics.join(' ')}`;
+
+  if (
+    DSA_WORD_PATTERN.test(haystack) ||
+    /(?:^|[^A-Z])DSA(?:$|[^a-z])/.test(repo.name)
+  ) {
+    return 'dsa';
+  }
+  if (AI_IOT_PATTERN.test(haystack) || repo.language === 'Jupyter Notebook') {
+    return 'ai-iot';
+  }
+  return 'projects';
 }
 
 export function formatShortDate(isoDate: string): string {
