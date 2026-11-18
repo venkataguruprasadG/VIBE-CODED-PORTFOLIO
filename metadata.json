@@ -2,5 +2,7 @@
   "name": "Rohan Mehta — Software Engineer Portfolio",
   "description": "Classic architectural software engineering portfolio showcasing resilient backend systems, full-stack applications, technical notes, and system architecture blueprints.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
