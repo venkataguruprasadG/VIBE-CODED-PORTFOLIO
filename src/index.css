@@ -1,0 +1,170 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  --bg-canvas: #EAF4FB;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #D9ECF8;
+  --text-primary: #091933;
+  --text-secondary: #3A5173;
+  --border-hairline: #C3DCEF;
+  --accent-glacier: #3B8EE0;
+  --accent-navy: #091933;
+  --accent-lemon: #EFEA2B;
+}
+
+.dark {
+  --bg-canvas: #081426;
+  --bg-surface: #0F2038;
+  --bg-elevated: #162B4A;
+  --text-primary: #EDF6FC;
+  --text-secondary: #9BB8D9;
+  --border-hairline: #1E375C;
+  --accent-glacier: #66B3F5;
+  --accent-navy: #091933;
+  --accent-lemon: #F2EC38;
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  transition: background-color 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-x: hidden;
+}
+
+/* Subtle paper-grain overlay */
+.paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.038'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.dark .paper-grain {
+  opacity: 0.45;
+}
+
+/* Ambient radial glow drift */
+@keyframes ambientDriftOne {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, 6%, 0) scale(1.06);
+  }
+}
+
+@keyframes ambientDriftTwo {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-5%, -4%, 0) scale(1.08);
+  }
+}
+
+.animate-ambient-one {
+  animation: ambientDriftOne 26s ease-in-out infinite;
+}
+
+.animate-ambient-two {
+  animation: ambientDriftTwo 32s ease-in-out infinite;
+}
+
+/* Spotlight card border effect in Glacier Blue & Lemon */
+.spotlight-card {
+  position: relative;
+}
+
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    420px circle at var(--mouse-x, -200px) var(--mouse-y, -200px),
+    var(--accent-glacier),
+    transparent 65%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  pointer-events: none;
+}
+
+.spotlight-card:hover::before {
+  opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ambient-one,
+  .animate-ambient-two {
+    animation: none;
+  }
+  .spotlight-card::before {
+    display: none;
+  }
+}
+
+/* Custom thin scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-hairline);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Classic CV Print Stylesheet */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 16mm;
+  }
+
+  html, body {
+    background: #FFFFFF !important;
+    color: #111111 !important;
+    font-size: 10.5pt !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-reset {
+    background: transparent !important;
+    border-color: #D4CFC7 !important;
+    box-shadow: none !important;
+    color: #111111 !important;
+  }
+}
