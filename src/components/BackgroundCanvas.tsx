@@ -27,7 +27,10 @@ export function BackgroundCanvas({ isDark }: BackgroundCanvasProps) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion =
+      typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
     let width = window.innerWidth;
     let height = window.innerHeight;
     let animationFrameId = 0;

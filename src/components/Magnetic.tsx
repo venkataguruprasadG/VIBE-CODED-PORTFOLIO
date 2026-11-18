@@ -33,7 +33,11 @@ export function Magnetic({
   const handleMouseMove = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
       if (prefersReducedMotion || !ref.current) return;
-      if (typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches) {
+      if (
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        !window.matchMedia('(pointer: fine)').matches
+      ) {
         return;
       }
 
