@@ -152,13 +152,6 @@ export default function App() {
             >
               {ENGINEER_PROFILE.email}
             </button>
-            <a
-              href={ENGINEER_PROFILE.resumePdfUrl}
-              download="Venkata_Guru_Prasad_Gummadi_Resume.pdf"
-              className="hover:text-[#091933] dark:hover:text-[#F2EC38] transition-colors"
-            >
-              Resume PDF
-            </a>
           </div>
         </div>
       </footer>

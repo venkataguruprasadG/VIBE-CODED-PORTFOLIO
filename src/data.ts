@@ -103,7 +103,6 @@ export const ENGINEER_PROFILE = {
   email: 'venkatagp27@gmail.com',
   phone: '+91 7032536516',
   profileImageUrl: '/assets/aistudio/MY_PROFILE_PIC_89f85d1d.jpeg',
-  resumePdfUrl: '/assets/aistudio/CB.SC.P2CSE26006_b6d8210c.pdf',
   bio: '4th-year Computer Science Engineering student specializing in IoT at ACE Engineering College (CGPA 8.73), with strong foundations in Python, Java, Computer Vision, and Embedded C++. Certified Pearson MePro Level 10 Expert with NPTEL Java credentials and hands-on virtual internships in AI/ML.',
   configManifest: {
     engineer: 'Venkata Guru Prasad Gummadi',

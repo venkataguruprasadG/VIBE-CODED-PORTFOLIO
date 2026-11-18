@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Check, Copy, FileText, Mail, Phone, Send } from 'lucide-react';
+import { Check, Copy, Mail, Phone, Send } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ENGINEER_PROFILE } from '../data';
 import { fadeUpItem, staggerContainer } from '../lib/animations';
@@ -181,16 +181,12 @@ export function ContactView({ onCopyEmail, onNotify }: ContactViewProps) {
               </div>
             </div>
 
-            {/* Official Resume PDF Link */}
-            <div className="mt-7 border-t border-[#1E375C] pt-5">
-              <a
-                href={ENGINEER_PROFILE.resumePdfUrl}
-                download="Venkata_Guru_Prasad_Gummadi_Resume.pdf"
-                className="flex items-center justify-between rounded-lg border border-[#1E375C] px-4 py-3 text-sm font-medium text-[#EDF6FC] hover:border-[#EFEA2B] hover:text-[#EFEA2B] transition-colors"
-              >
-                <span>Download Official Resume (PDF)</span>
-                <FileText className="h-4 w-4 text-[#EFEA2B]" aria-hidden="true" />
-              </a>
+            {/* Availability Footer */}
+            <div className="mt-7 border-t border-[#1E375C] pt-5 font-mono text-xs text-[#9BB8D9]">
+              <div className="text-[#EFEA2B]">{ENGINEER_PROFILE.availability}</div>
+              <div className="mt-1 text-[#9BB8D9]/85">
+                Tailored CV available upon direct inquiry.
+              </div>
             </div>
           </div>
         </motion.div>

@@ -1,4 +1,4 @@
-import { Award, FileText, GraduationCap, Printer } from 'lucide-react';
+import { Award, GraduationCap, Printer } from 'lucide-react';
 import { motion } from 'motion/react';
 import {
   CERTIFICATIONS,
@@ -55,17 +55,6 @@ export function ExperienceView({ onPrintCV }: ExperienceViewProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto shrink-0">
-          <Magnetic strength={0.2} maxOffset={5}>
-            <a
-              href={ENGINEER_PROFILE.resumePdfUrl}
-              download="Venkata_Guru_Prasad_Gummadi_Resume.pdf"
-              className="inline-flex items-center gap-2 rounded-md border border-[#C3DCEF] dark:border-[#1E375C] bg-[#FFFFFF] dark:bg-[#0F2038] px-4 py-2.5 text-xs font-medium text-[#091933] dark:text-[#EDF6FC] hover:border-[#3B8EE0] dark:hover:border-[#F2EC38] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B8EE0]"
-            >
-              <FileText className="h-3.5 w-3.5 text-[#3B8EE0] dark:text-[#66B3F5]" aria-hidden="true" />
-              <span>Download Resume PDF</span>
-            </a>
-          </Magnetic>
-
           <Magnetic strength={0.22} maxOffset={6}>
             <button
               type="button"

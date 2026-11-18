@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRight, ArrowUpRight, Command, Copy, FileText, User } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Command, Copy, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import {
   ENGINEERING_NOTES,
@@ -141,17 +141,6 @@ export function OverviewView({
                   <span>Explore Selected Work</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </button>
-              </Magnetic>
-
-              <Magnetic strength={0.2} maxOffset={5}>
-                <a
-                  href={ENGINEER_PROFILE.resumePdfUrl}
-                  download="Venkata_Guru_Prasad_Gummadi_Resume.pdf"
-                  className="inline-flex items-center gap-2 rounded-md border border-[#1E375C] bg-[#0F2038]/90 px-4 py-2.5 text-sm font-medium text-[#EDF6FC] hover:border-[#EFEA2B] hover:text-[#EFEA2B] transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EFEA2B]"
-                >
-                  <FileText className="h-3.5 w-3.5 text-[#66B3F5]" aria-hidden="true" />
-                  <span>Resume PDF</span>
-                </a>
               </Magnetic>
 
               <Magnetic strength={0.2} maxOffset={5}>

@@ -100,7 +100,7 @@ export function CommandPalette({
         id: 'nav-contact',
         group: 'Navigation',
         label: 'Go to Contact',
-        hint: 'Email, Phone, Resume PDF & Inquiry Form',
+        hint: 'Email, Phone & Inquiry Form',
         keywords: 'contact email phone hire message',
         icon: 'nav',
         run: () => onNavigate('contact'),
